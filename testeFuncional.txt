@@ -1,0 +1,11 @@
+A = 0
+alorsque(A!=10){	
+	si(A == 3){
+		affichage A
+		A = 10
+	}
+	sinon{
+		A = 1+1
+	}
+}
+
