@@ -1,0 +1,16 @@
+a = 1
+b = 1
+n = 8
+i = 2
+
+si(n >= 0){
+  affichage(a)
+} 
+si (n >= 1){
+  affichage(b)
+}  
+auxiliar = a + b
+affichage(auxiliar)
+i = i + 1
+
+a = b

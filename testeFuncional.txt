@@ -1,11 +1,19 @@
-A = 0
-alorsque(A!=10){	
-	si(A == 3){
-		affichage A
-		A = 10
-	}
-	sinon{
-		A = 1+1
-	}
-}
+a = 0
+b = 1
+n = 8
+i = 2
 
+si(n >= 0){
+  affichage(a)
+} 
+si (n >= 1){
+  affichage(b)
+} 
+    
+alorsque(i<=n){
+  auxiliar = a + b
+  a = b
+  b = auxiliar
+  affichage(auxiliar)
+  i = i + 1
+}

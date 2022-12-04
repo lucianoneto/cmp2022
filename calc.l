@@ -41,7 +41,7 @@ L	[a-zA-Z_]
 
 
  /* comentário */
-.					{ printf("Invalid caracter: %c.\n", yytext[0]); }
+.					{ printf("Caractère invalide: %c.\n", yytext[0]); }
 
 %%
 

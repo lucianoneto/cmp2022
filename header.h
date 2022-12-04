@@ -29,6 +29,7 @@ typedef struct {
 typedef struct{	
 	char *nome;
 	int token;
+	int line;
 	bool exists;
 } simbolo;
 
@@ -49,7 +50,7 @@ struct noh {
 	int intv;
 
 	char *name;
-
+	
 	struct noh *children[1];
 };
 typedef struct noh noh;
@@ -57,6 +58,8 @@ typedef struct noh noh;
 typedef void (*visitor_action)(noh **root, noh *no);
 
 void check_declared_vars(noh **root, noh *no);
+void check_division_zero(noh **root, noh *no);
+void check_receive_itself(noh **root, noh *no);
 
 void visitor_leaf_first(noh **root, visitor_action act);
 

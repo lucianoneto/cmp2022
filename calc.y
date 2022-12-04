@@ -33,11 +33,12 @@ program : stmts {
 			 noh *program = create_noh(PROGRAM, 1) ;
 			 program->children[0] = $1             ;
 			 print(program) ;
-			 debug();
 
 			 // chamada da árvore abstrata
 			 // chamada da verificação semântica
 			 visitor_leaf_first(&program, check_declared_vars);
+			 visitor_leaf_first(&program, check_division_zero);
+			 visitor_leaf_first(&program, check_receive_itself);
 		 }
 ;
 
@@ -57,11 +58,11 @@ stmts : stmts stmt {
 	;
 
 stmt : atribuicao {
-	 		$$ = $1                   ;
+	 		$$ = $1                        ;
 	 }
 | TOK_AFFICHAGE aritmetica {
-	 		$$ = create_noh(AFFICHAGE, 1) ;
-			$$->children[0] = $2          ;
+	 		$$ = create_noh(AFFICHAGE, 1)  ;
+			$$->children[0] = $2           ;
 	 }
 ;
 
@@ -81,27 +82,64 @@ atribuicao : TOK_IDENT '=' aritmetica {
 si : TOK_SI '(' logical ')' '{' stmts '}' {
 				$$ = create_noh(SI, 2)                                     ;
 				$$->children[0] = $3                                       ;
-				$$->children[1] = $6                                       ;
+				noh *aux = $6						  					   ;	
+				if(aux -> childcount == 1){
+				  $$->children[1] = aux -> children[0];
+				  free(aux);
+				}
+				else{
+				  $$ -> children[1] = aux;
+				}				
 			}
 | TOK_SI '(' logical ')' '{' stmts '}' TOK_SINON si{
 				$$ = create_noh(SI, 3)                                     ;
 				$$->children[0] = $3                                       ;
-				$$->children[1] = $6                                       ;
 				$$->children[2] = $9                                       ;
+				noh *aux = $6						   					   ;
+				if(aux -> childcount == 1){
+                                  $$->children[1] = aux -> children[0];
+                                  free(aux);
+                                }
+				else{
+                                  $$ -> children[1] = aux;
+				}
 				}
 | TOK_SI '(' logical ')' '{' stmts '}' TOK_SINON '{' stmts '}'{
 				$$ = create_noh(SI, 3)                                     ;
 				$$->children[0] = $3                                       ;
-				$$->children[1] = $6                                       ;
-				$$->children[2] = $10                                      ;
+				noh *aux = $6						  				       ;   
+				if(aux -> childcount == 1){
+                                  $$->children[1] = aux -> children[0];
+                                  free(aux);
+                                }
+				else{
+                                  $$ -> children[1] = aux;
 				}
-;
 
-alorsque	: TOK_ALORSQUE '(' logical ')' '{' stmts '}'{
+				aux = $10                                             	  ;
+                                if(aux -> childcount == 1){
+                                  $$->children[2] = aux -> children[0];
+                                  free(aux);
+                                }
+                                else{
+                                  $$ -> children[2] = aux;
+				}
+}
+
+alorsque	: TOK_ALORSQUE '(' logical ')' '{' stmts  '}'{
 							$$ = create_noh(ALORSQUE, 2)              ;
 							$$->children[0] = $3                      ;
-							$$->children[1] = $6                      ;
-							}
+							noh *aux = $6                             ;
+			                if(aux -> childcount == 1){
+                        	  $$->children[1] = aux -> children[0];
+                              free(aux);
+                            }
+							else{
+			                  $$ -> children[1] = aux;
+                            }
+
+						
+	}
 		;
 
 logical : logical TOK_OU lterm	{
@@ -221,6 +259,6 @@ factor : '(' aritmetica ')' {
 %%
 
 int yyerror(const char *s) {
-printf("Erro na linha %d: %s\n", yylineno, s)    ;
+printf("Erreur de ligne %d: %s\n", yylineno, s)    ;
 	return 1                                     ;
 }

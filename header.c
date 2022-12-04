@@ -75,7 +75,7 @@ void check_declared_vars(noh **root, noh *no)
 		int s = search_symbol(no->name);
 		if (s == -1 || !tsimbolos[s].exists)
 		{
-			printf("%d: error : símbolo %s não declarado.\n", 0, no->name);
+			printf("%d: erreur : symbole %s non déclaré.\n", 0, no->name);
 			error_count++;
 		}
 	}
@@ -92,7 +92,7 @@ void visitor_leaf_first(noh **root, visitor_action act)
 	}
 }
 
-simbolo *simbolo_novo(char *nome, int token) {
+simbolo *simbolo_novo(char *nome,  int token) {
 	tsimbolos[simbolo_qtd].nome = nome;
 	tsimbolos[simbolo_qtd].token = token;
 	tsimbolos[simbolo_qtd].exists = false;
@@ -111,8 +111,35 @@ bool simbolo_existe(char *nome) {
 }
 
 void debug() {
-	printf("Simbolos:\n");
+	printf("Symboles:\n");
 	for(int i = 0; i < simbolo_qtd; i++) {
 		printf("\t%s\n", tsimbolos[i].nome);
+	}
+}
+
+void check_division_zero(noh **root, noh *no)
+{
+	if(no->type == DIVIDE){
+		noh *aux = no->children[1];
+		if(aux->type == INTEGER || aux->type == FLOAT){
+			if(aux->intv == 0 || aux->dblv == 0){
+				printf("%d: erreur : ne peut pas diviser par zéro.\n", 0);
+				error_count++;
+			}
+		}
+	}
+}
+
+void check_receive_itself(noh **root, noh *no)
+{
+	if(no->type == ASSIGN){
+		noh *aux = no->children[0];
+		noh *aux2 = no->children[1];
+		if(aux->type == IDENT){
+			if(aux2->type == IDENT && ((aux->intv == aux2->intv) ||(aux->dblv == aux2->dblv))){
+				printf("%d: attention : variable '%s' recevant un contenu égal à lui-même.\n", 0, aux->name);
+				error_count++;
+			}
+		}
 	}
 }
