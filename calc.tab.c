@@ -1418,7 +1418,7 @@ yyreduce:
   case 2: /* program: stmts  */
 #line 32 "calc.y"
                 {
-			 noh *program = create_noh(PROGRAM, 1) ;
+			 noh *program = create_noh(PROGRAM, 1, yylineno) ;
 			 program->children[0] = (yyvsp[0].no)             ;
 			 print(program) ;
 
@@ -1448,7 +1448,7 @@ yyreduce:
   case 4: /* stmts: stmt  */
 #line 54 "calc.y"
        {
-	 		(yyval.no) = create_noh(STMT, 1)       ;
+	 		(yyval.no) = create_noh(STMT, 1, yylineno)       ;
 			(yyval.no)->children[0] = (yyvsp[0].no)           ;
 		}
 #line 1455 "calc.tab.c"
@@ -1457,7 +1457,7 @@ yyreduce:
   case 5: /* stmt: atribuicao  */
 #line 60 "calc.y"
                   {
-	 		(yyval.no) = (yyvsp[0].no)                   ;
+	 		(yyval.no) = (yyvsp[0].no)                        ;
 	 }
 #line 1463 "calc.tab.c"
     break;
@@ -1465,8 +1465,8 @@ yyreduce:
   case 6: /* stmt: TOK_AFFICHAGE aritmetica  */
 #line 63 "calc.y"
                            {
-	 		(yyval.no) = create_noh(AFFICHAGE, 1) ;
-			(yyval.no)->children[0] = (yyvsp[0].no)          ;
+	 		(yyval.no) = create_noh(AFFICHAGE, 1, yylineno)  ;
+			(yyval.no)->children[0] = (yyvsp[0].no)           ;
 	 }
 #line 1472 "calc.tab.c"
     break;
@@ -1474,8 +1474,8 @@ yyreduce:
   case 7: /* atribuicao: TOK_IDENT '=' aritmetica  */
 #line 69 "calc.y"
                                       {
-	 			(yyval.no) = create_noh(ASSIGN, 2)          ;
-				noh *aux = create_noh(IDENT, 0)     ;
+	 			(yyval.no) = create_noh(ASSIGN, 2, yylineno)          ;
+				noh *aux = create_noh(IDENT, 0, yylineno)     ;
 				aux->name = (yyvsp[-2].args).ident                ;
 				(yyval.no)->children[0] = aux               ;
 				(yyval.no)->children[1] = (yyvsp[0].no)                ;
@@ -1500,9 +1500,9 @@ yyreduce:
   case 10: /* si: TOK_SI '(' logical ')' '{' stmts '}'  */
 #line 82 "calc.y"
                                           {
-				(yyval.no) = create_noh(SI, 2)                                     ;
+				(yyval.no) = create_noh(SI, 2, yylineno)                                     ;
 				(yyval.no)->children[0] = (yyvsp[-4].no)                                       ;
-				noh *aux = (yyvsp[-1].no)						   ;	
+				noh *aux = (yyvsp[-1].no)						  					   ;	
 				if(aux -> childcount == 1){
 				  (yyval.no)->children[1] = aux -> children[0];
 				  free(aux);
@@ -1517,10 +1517,10 @@ yyreduce:
   case 11: /* si: TOK_SI '(' logical ')' '{' stmts '}' TOK_SINON si  */
 #line 94 "calc.y"
                                                    {
-				(yyval.no) = create_noh(SI, 3)                                     ;
+				(yyval.no) = create_noh(SI, 3, yylineno)                                     ;
 				(yyval.no)->children[0] = (yyvsp[-6].no)                                       ;
 				(yyval.no)->children[2] = (yyvsp[0].no)                                       ;
-				noh *aux = (yyvsp[-3].no)						   ;
+				noh *aux = (yyvsp[-3].no)						   					   ;
 				if(aux -> childcount == 1){
                                   (yyval.no)->children[1] = aux -> children[0];
                                   free(aux);
@@ -1535,9 +1535,9 @@ yyreduce:
   case 12: /* si: TOK_SI '(' logical ')' '{' stmts '}' TOK_SINON '{' stmts '}'  */
 #line 107 "calc.y"
                                                               {
-				(yyval.no) = create_noh(SI, 3)                                     ;
+				(yyval.no) = create_noh(SI, 3, yylineno)                                     ;
 				(yyval.no)->children[0] = (yyvsp[-8].no)                                       ;
-				noh *aux = (yyvsp[-5].no)						   ;   
+				noh *aux = (yyvsp[-5].no)						  				       ;   
 				if(aux -> childcount == 1){
                                   (yyval.no)->children[1] = aux -> children[0];
                                   free(aux);
@@ -1546,7 +1546,7 @@ yyreduce:
                                   (yyval.no) -> children[1] = aux;
 				}
 
-				aux = (yyvsp[-1].no)                                              ;
+				aux = (yyvsp[-1].no)                                             	  ;
                                 if(aux -> childcount == 1){
                                   (yyval.no)->children[2] = aux -> children[0];
                                   free(aux);
@@ -1561,16 +1561,16 @@ yyreduce:
   case 13: /* alorsque: TOK_ALORSQUE '(' logical ')' '{' stmts '}'  */
 #line 129 "calc.y"
                                                              {
-							(yyval.no) = create_noh(ALORSQUE, 2)              ;
+							(yyval.no) = create_noh(ALORSQUE, 2, yylineno)              ;
 							(yyval.no)->children[0] = (yyvsp[-4].no)                      ;
-							noh *aux = (yyvsp[-1].no)                                              ;
-			                                if(aux -> childcount == 1){
-                        			          (yyval.no)->children[1] = aux -> children[0];
-                                 			  free(aux);
-                                			}
+							noh *aux = (yyvsp[-1].no)                             ;
+			                if(aux -> childcount == 1){
+                        	  (yyval.no)->children[1] = aux -> children[0];
+                              free(aux);
+                            }
 							else{
-			                                  (yyval.no) -> children[1] = aux;
-                               				 }
+			                  (yyval.no) -> children[1] = aux;
+                            }
 
 						
 	}
@@ -1580,7 +1580,7 @@ yyreduce:
   case 14: /* logical: logical TOK_OU lterm  */
 #line 145 "calc.y"
                                 {
-							(yyval.no) = create_noh(OU, 2)   ;
+							(yyval.no) = create_noh(OU, 2, yylineno)   ;
 							(yyval.no)->children[0] = (yyvsp[-2].no)     ;
 							(yyval.no)->children[1] = (yyvsp[0].no)     ;
 							}
@@ -1598,7 +1598,7 @@ yyreduce:
   case 16: /* lterm: lterm TOK_ET lfactor  */
 #line 155 "calc.y"
                                 {
-								(yyval.no) = create_noh(ET, 2) ;
+								(yyval.no) = create_noh(ET, 2, yylineno) ;
 							 (yyval.no)->children[0] = (yyvsp[-2].no)      ;
 							 (yyval.no)->children[1] = (yyvsp[0].no)      ;
 							}
@@ -1624,7 +1624,7 @@ yyreduce:
   case 19: /* lfactor: aritmetica '>' aritmetica  */
 #line 168 "calc.y"
                                                         {
-								(yyval.no) = create_noh(GT, 2)     ;
+								(yyval.no) = create_noh(GT, 2, yylineno)     ;
 							 (yyval.no)->children[0] = (yyvsp[-2].no)          ;
 							 (yyval.no)->children[1] = (yyvsp[0].no)          ;
 							}
@@ -1634,7 +1634,7 @@ yyreduce:
   case 20: /* lfactor: aritmetica '<' aritmetica  */
 #line 173 "calc.y"
                                                         {
-								(yyval.no) = create_noh(LT, 2)     ;
+								(yyval.no) = create_noh(LT, 2, yylineno)     ;
 							 (yyval.no)->children[0]= (yyvsp[-2].no)           ;
 							 (yyval.no)->children[1] = (yyvsp[0].no)          ;
 							}
@@ -1644,7 +1644,7 @@ yyreduce:
   case 21: /* lfactor: aritmetica '=' '=' aritmetica  */
 #line 178 "calc.y"
                                                 {
-								(yyval.no) = create_noh(EQ, 2)     ;
+								(yyval.no) = create_noh(EQ, 2, yylineno)     ;
 							 (yyval.no)->children[0] = (yyvsp[-3].no)          ;
 							 (yyval.no)->children[1] = (yyvsp[0].no)          ;
 							}
@@ -1654,7 +1654,7 @@ yyreduce:
   case 22: /* lfactor: aritmetica '>' '=' aritmetica  */
 #line 183 "calc.y"
                                                 {
-								(yyval.no) = create_noh(GE, 2)     ;
+								(yyval.no) = create_noh(GE, 2, yylineno)     ;
 							 (yyval.no)->children[0] = (yyvsp[-3].no)          ;
 							 (yyval.no)->children[1] = (yyvsp[0].no)          ;
 							}
@@ -1664,7 +1664,7 @@ yyreduce:
   case 23: /* lfactor: aritmetica '<' '=' aritmetica  */
 #line 188 "calc.y"
                                                 {
-								(yyval.no) = create_noh(LE, 2)     ;
+								(yyval.no) = create_noh(LE, 2, yylineno)     ;
 							 (yyval.no)->children[0] = (yyvsp[-3].no)          ;
 							 (yyval.no)->children[1] = (yyvsp[0].no)          ;
 							}
@@ -1674,7 +1674,7 @@ yyreduce:
   case 24: /* lfactor: aritmetica '!' '=' aritmetica  */
 #line 193 "calc.y"
                                                 {
-								(yyval.no) = create_noh(NE, 2)     ;
+								(yyval.no) = create_noh(NE, 2, yylineno)     ;
 							 (yyval.no)->children[0] = (yyvsp[-3].no)          ;
 							 (yyval.no)->children[1] = (yyvsp[0].no)          ;
 							}
@@ -1684,7 +1684,7 @@ yyreduce:
   case 25: /* aritmetica: aritmetica '+' term  */
 #line 200 "calc.y"
                                  {
-	 			(yyval.no) = create_noh(SUM, 2)        ;
+	 			(yyval.no) = create_noh(SUM, 2, yylineno)        ;
 				(yyval.no)->children[0] = (yyvsp[-2].no)           ;
 				(yyval.no)->children[1] = (yyvsp[0].no)           ;
 	 		}
@@ -1694,7 +1694,7 @@ yyreduce:
   case 26: /* aritmetica: aritmetica '-' term  */
 #line 205 "calc.y"
                                        {
-	 			(yyval.no) = create_noh(MINUS, 2)      ;
+	 			(yyval.no) = create_noh(MINUS, 2, yylineno)      ;
 				(yyval.no)->children[0] = (yyvsp[-2].no)           ;
 				(yyval.no)->children[1] = (yyvsp[0].no)           ;
 	 		}
@@ -1712,7 +1712,7 @@ yyreduce:
   case 28: /* term: term '*' term2  */
 #line 215 "calc.y"
                       {
-	 		(yyval.no) = create_noh(MULTI, 2)   ;
+	 		(yyval.no) = create_noh(MULTI, 2, yylineno)   ;
 			(yyval.no)->children[0] = (yyvsp[-2].no)        ;
 			(yyval.no)->children[1] = (yyvsp[0].no)        ;	
 	 }
@@ -1722,7 +1722,7 @@ yyreduce:
   case 29: /* term: term '/' term2  */
 #line 220 "calc.y"
                  {
-	 		(yyval.no) = create_noh(DIVIDE, 2)  ;
+	 		(yyval.no) = create_noh(DIVIDE, 2, yylineno)  ;
 			(yyval.no)->children[0] = (yyvsp[-2].no)        ;
 			(yyval.no)->children[1] = (yyvsp[0].no)        ;	
 	 }
@@ -1740,7 +1740,7 @@ yyreduce:
   case 31: /* term2: term2 '^' factor  */
 #line 230 "calc.y"
                          {
-	 		(yyval.no) = create_noh(POW, 2)  ;
+	 		(yyval.no) = create_noh(POW, 2, yylineno)  ;
 			(yyval.no)->children[0] = (yyvsp[-2].no)     ;
 			(yyval.no)->children[1] = (yyvsp[0].no)     ;
 		}
@@ -1766,7 +1766,7 @@ yyreduce:
   case 34: /* factor: TOK_IDENT  */
 #line 243 "calc.y"
             {
-	 		(yyval.no) = create_noh(IDENT, 0)    ;
+	 		(yyval.no) = create_noh(IDENT, 0, yylineno)    ;
 			(yyval.no)->name = (yyvsp[0].args).ident          ;
 			if (!simbolo_existe((yyvsp[0].args).ident))
 				simbolo_novo((yyvsp[0].args).ident, TOK_IDENT);
@@ -1777,7 +1777,7 @@ yyreduce:
   case 35: /* factor: TOK_INTEGER  */
 #line 249 "calc.y"
                        {
-	 		(yyval.no) = create_noh(INTEGER, 0)  ;
+	 		(yyval.no) = create_noh(INTEGER, 0, yylineno)  ;
 			(yyval.no)->intv = (yyvsp[0].args).intv           ;
 	 	 }
 #line 1784 "calc.tab.c"
@@ -1786,7 +1786,7 @@ yyreduce:
   case 36: /* factor: TOK_FLOAT  */
 #line 253 "calc.y"
                      {
-	 		(yyval.no) = create_noh(FLOAT, 0)    ;
+	 		(yyval.no) = create_noh(FLOAT, 0, yylineno)    ;
 			(yyval.no)->dblv = (yyvsp[0].args).dblv           ;
 	 	 }
 #line 1793 "calc.tab.c"

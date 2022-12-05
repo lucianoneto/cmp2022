@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <stdio.h>
@@ -29,7 +28,6 @@ typedef struct {
 typedef struct{	
 	char *nome;
 	int token;
-	int line;
 	bool exists;
 } simbolo;
 
@@ -49,6 +47,7 @@ struct noh {
 	double dblv;
 	int intv;
 
+	int line; 
 	char *name;
 	
 	struct noh *children[1];
@@ -63,7 +62,7 @@ void check_receive_itself(noh **root, noh *no);
 
 void visitor_leaf_first(noh **root, visitor_action act);
 
-noh *create_noh(enum noh_type, int children);
+noh *create_noh(enum noh_type, int children, int line);
 
 void print(noh *root);
 void print_rec(FILE *f, noh *root);

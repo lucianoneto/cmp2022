@@ -1,8 +1,7 @@
-// header.c
 #include <stdlib.h>
 #include "header.h"
 
-noh *create_noh(enum noh_type nt, int children) {
+noh *create_noh(enum noh_type nt, int children, int line) {
 	static int IDCOUNT = 0;
 	noh *newn = (noh*)calloc(1,
 		sizeof(noh)+
@@ -10,6 +9,7 @@ noh *create_noh(enum noh_type nt, int children) {
 	newn->type = nt;
 	newn->childcount = children;
 	newn->id = IDCOUNT++;
+	newn->line = line;
 	return newn;
 }
 
@@ -75,7 +75,7 @@ void check_declared_vars(noh **root, noh *no)
 		int s = search_symbol(no->name);
 		if (s == -1 || !tsimbolos[s].exists)
 		{
-			printf("%d: erreur : symbole %s non déclaré.\n", 0, no->name);
+			printf("%d: erreur : symbole %s non déclaré.\n", no->children[1]->line, no->name);
 			error_count++;
 		}
 	}
@@ -123,7 +123,7 @@ void check_division_zero(noh **root, noh *no)
 		noh *aux = no->children[1];
 		if(aux->type == INTEGER || aux->type == FLOAT){
 			if(aux->intv == 0 || aux->dblv == 0){
-				printf("%d: erreur : ne peut pas diviser par zéro.\n", 0);
+				printf("%d: erreur : ne peut pas diviser par zéro.\n", no->children[1]->line);
 				error_count++;
 			}
 		}
@@ -137,7 +137,7 @@ void check_receive_itself(noh **root, noh *no)
 		noh *aux2 = no->children[1];
 		if(aux->type == IDENT){
 			if(aux2->type == IDENT && ((aux->intv == aux2->intv) ||(aux->dblv == aux2->dblv))){
-				printf("%d: attention : variable '%s' recevant un contenu égal à lui-même.\n", 0, aux->name);
+				printf("%d: attention : variable '%s' recevant un contenu égal à lui-même.\n", no->children[1]->line, aux->name);
 				error_count++;
 			}
 		}
