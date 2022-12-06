@@ -30,15 +30,16 @@ extern int yylineno ;
 %%
 
 program : stmts {
-			 noh *program = create_noh(PROGRAM, 1, yylineno) ;
+			 noh *program = create_noh(PROGRAM, 1) ;
 			 program->children[0] = $1             ;
-			 print(program) ;
-
+			 print(program)   					   ;
+			 
 			 // chamada da árvore abstrata
 			 // chamada da verificação semântica
+			 
 			 visitor_leaf_first(&program, check_declared_vars);
 			 visitor_leaf_first(&program, check_division_zero);
-			 visitor_leaf_first(&program, check_receive_itself);
+			 visitor_leaf_first(&program, check_receive_itself);				 
 		 }
 ;
 
@@ -52,7 +53,7 @@ stmts : stmts stmt {
 			$$ = n                          ;
 		}
 | stmt {
-	 		$$ = create_noh(STMT, 1, yylineno)       ;
+	 		$$ = create_noh(STMT, 1)       ;
 			$$->children[0] = $1           ;
 		}
 	;
@@ -61,14 +62,14 @@ stmt : atribuicao {
 	 		$$ = $1                        ;
 	 }
 | TOK_AFFICHAGE aritmetica {
-	 		$$ = create_noh(AFFICHAGE, 1, yylineno)  ;
+	 		$$ = create_noh(AFFICHAGE, 1)  ;
 			$$->children[0] = $2           ;
 	 }
 ;
 
 atribuicao : TOK_IDENT '=' aritmetica {
-	 			$$ = create_noh(ASSIGN, 2, yylineno)          ;
-				noh *aux = create_noh(IDENT, 0, yylineno)     ;
+	 			$$ = create_noh(ASSIGN, 2)          ;
+				noh *aux = create_noh(IDENT, 0)     ;
 				aux->name = $1.ident                ;
 				$$->children[0] = aux               ;
 				$$->children[1] = $3                ;
@@ -80,7 +81,7 @@ atribuicao : TOK_IDENT '=' aritmetica {
 ;
 
 si : TOK_SI '(' logical ')' '{' stmts '}' {
-				$$ = create_noh(SI, 2, yylineno)                                     ;
+				$$ = create_noh(SI, 2)                                     ;
 				$$->children[0] = $3                                       ;
 				noh *aux = $6						  					   ;	
 				if(aux -> childcount == 1){
@@ -92,7 +93,7 @@ si : TOK_SI '(' logical ')' '{' stmts '}' {
 				}				
 			}
 | TOK_SI '(' logical ')' '{' stmts '}' TOK_SINON si{
-				$$ = create_noh(SI, 3, yylineno)                                     ;
+				$$ = create_noh(SI, 3)                                     ;
 				$$->children[0] = $3                                       ;
 				$$->children[2] = $9                                       ;
 				noh *aux = $6						   					   ;
@@ -105,7 +106,7 @@ si : TOK_SI '(' logical ')' '{' stmts '}' {
 				}
 				}
 | TOK_SI '(' logical ')' '{' stmts '}' TOK_SINON '{' stmts '}'{
-				$$ = create_noh(SI, 3, yylineno)                                     ;
+				$$ = create_noh(SI, 3)                                     ;
 				$$->children[0] = $3                                       ;
 				noh *aux = $6						  				       ;   
 				if(aux -> childcount == 1){
@@ -127,7 +128,7 @@ si : TOK_SI '(' logical ')' '{' stmts '}' {
 }
 
 alorsque	: TOK_ALORSQUE '(' logical ')' '{' stmts  '}'{
-							$$ = create_noh(ALORSQUE, 2, yylineno)              ;
+							$$ = create_noh(ALORSQUE, 2)              ;
 							$$->children[0] = $3                      ;
 							noh *aux = $6                             ;
 			                if(aux -> childcount == 1){
@@ -143,7 +144,7 @@ alorsque	: TOK_ALORSQUE '(' logical ')' '{' stmts  '}'{
 		;
 
 logical : logical TOK_OU lterm	{
-							$$ = create_noh(OU, 2, yylineno)   ;
+							$$ = create_noh(OU, 2)   ;
 							$$->children[0] = $1     ;
 							$$->children[1] = $3     ;
 							}
@@ -153,7 +154,7 @@ logical : logical TOK_OU lterm	{
 		;
 
 lterm	: lterm TOK_ET lfactor	{
-								$$ = create_noh(ET, 2, yylineno) ;
+								$$ = create_noh(ET, 2) ;
 							 $$->children[0] = $1      ;
 							 $$->children[1] = $3      ;
 							}
@@ -166,44 +167,44 @@ lfactor : '(' logical ')'	{
 								$$ = $2                    ;
 		}
 		| aritmetica '>' aritmetica		{
-								$$ = create_noh(GT, 2, yylineno)     ;
+								$$ = create_noh(GT, 2)     ;
 							 $$->children[0] = $1          ;
 							 $$->children[1] = $3          ;
 							}
 		| aritmetica '<' aritmetica		{
-								$$ = create_noh(LT, 2, yylineno)     ;
+								$$ = create_noh(LT, 2)     ;
 							 $$->children[0]= $1           ;
 							 $$->children[1] = $3          ;
 							}
 		| aritmetica '=''=' aritmetica	{
-								$$ = create_noh(EQ, 2, yylineno)     ;
+								$$ = create_noh(EQ, 2)     ;
 							 $$->children[0] = $1          ;
 							 $$->children[1] = $4          ;
 							}
 		| aritmetica '>''=' aritmetica	{
-								$$ = create_noh(GE, 2, yylineno)     ;
+								$$ = create_noh(GE, 2)     ;
 							 $$->children[0] = $1          ;
 							 $$->children[1] = $4          ;
 							}
 		| aritmetica '<''=' aritmetica	{
-								$$ = create_noh(LE, 2, yylineno)     ;
+								$$ = create_noh(LE, 2)     ;
 							 $$->children[0] = $1          ;
 							 $$->children[1] = $4          ;
 							}
 		| aritmetica '!''=' aritmetica	{
-								$$ = create_noh(NE, 2, yylineno)     ;
+								$$ = create_noh(NE, 2)     ;
 							 $$->children[0] = $1          ;
 							 $$->children[1] = $4          ;
 							}
 		;
 
 aritmetica : aritmetica '+' term {
-	 			$$ = create_noh(SUM, 2, yylineno)        ;
+	 			$$ = create_noh(SUM, 2)        ;
 				$$->children[0] = $1           ;
 				$$->children[1] = $3           ;
 	 		}
 		 | aritmetica '-' term {
-	 			$$ = create_noh(MINUS, 2, yylineno)      ;
+	 			$$ = create_noh(MINUS, 2)      ;
 				$$->children[0] = $1           ;
 				$$->children[1] = $3           ;
 	 		}
@@ -213,12 +214,12 @@ aritmetica : aritmetica '+' term {
 		;
 
 term : term '*' term2 {
-	 		$$ = create_noh(MULTI, 2, yylineno)   ;
+	 		$$ = create_noh(MULTI, 2)   ;
 			$$->children[0] = $1        ;
 			$$->children[1] = $3        ;	
 	 }
 | term '/' term2 {
-	 		$$ = create_noh(DIVIDE, 2, yylineno)  ;
+	 		$$ = create_noh(DIVIDE, 2)  ;
 			$$->children[0] = $1        ;
 			$$->children[1] = $3        ;	
 	 }
@@ -228,7 +229,7 @@ term : term '*' term2 {
 	;
 
 term2 : term2 '^' factor {
-	 		$$ = create_noh(POW, 2, yylineno)  ;
+	 		$$ = create_noh(POW, 2)  ;
 			$$->children[0] = $1     ;
 			$$->children[1] = $3     ;
 		}
@@ -241,17 +242,17 @@ factor : '(' aritmetica ')' {
 			$$ = $2                      ;
 		 }
 | TOK_IDENT {
-	 		$$ = create_noh(IDENT, 0, yylineno)    ;
+	 		$$ = create_noh(IDENT, 0)    ;
 			$$->name = $1.ident          ;
 			if (!simbolo_existe($1.ident))
 				simbolo_novo($1.ident, TOK_IDENT);
 	 }
 	 | TOK_INTEGER {
-	 		$$ = create_noh(INTEGER, 0, yylineno)  ;
+	 		$$ = create_noh(INTEGER, 0)  ;
 			$$->intv = $1.intv           ;
 	 	 }
 	 | TOK_FLOAT {
-	 		$$ = create_noh(FLOAT, 0, yylineno)    ;
+	 		$$ = create_noh(FLOAT, 0)    ;
 			$$->dblv = $1.dblv           ;
 	 	 }
 	;
@@ -259,6 +260,7 @@ factor : '(' aritmetica ')' {
 %%
 
 int yyerror(const char *s) {
-printf("Erreur de ligne %d: %s\n", yylineno, s)    ;
+error_count++;
+printf("Erreur: %d. Ligne: %d. %s\n" ,error_count, yylineno, s)    ;
 	return 1                                     ;
 }

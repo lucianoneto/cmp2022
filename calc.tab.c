@@ -533,10 +533,10 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    32,    32,    45,    54,    60,    63,    69,    78,    79,
-      82,    94,   107,   129,   145,   150,   155,   160,   165,   168,
-     173,   178,   183,   188,   193,   200,   205,   210,   215,   220,
-     225,   230,   235,   240,   243,   249,   253
+       0,    32,    32,    46,    55,    61,    64,    70,    79,    80,
+      83,    95,   108,   130,   146,   151,   156,   161,   166,   169,
+     174,   179,   184,   189,   194,   201,   206,   211,   216,   221,
+     226,   231,   236,   241,   244,   250,   254
 };
 #endif
 
@@ -1418,21 +1418,22 @@ yyreduce:
   case 2: /* program: stmts  */
 #line 32 "calc.y"
                 {
-			 noh *program = create_noh(PROGRAM, 1, yylineno) ;
+			 noh *program = create_noh(PROGRAM, 1) ;
 			 program->children[0] = (yyvsp[0].no)             ;
-			 print(program) ;
-
+			 print(program)   					   ;
+			 
 			 // chamada da árvore abstrata
 			 // chamada da verificação semântica
+			 
 			 visitor_leaf_first(&program, check_declared_vars);
 			 visitor_leaf_first(&program, check_division_zero);
-			 visitor_leaf_first(&program, check_receive_itself);
+			 visitor_leaf_first(&program, check_receive_itself);				 
 		 }
-#line 1432 "calc.tab.c"
+#line 1433 "calc.tab.c"
     break;
 
   case 3: /* stmts: stmts stmt  */
-#line 45 "calc.y"
+#line 46 "calc.y"
                    {
 			noh *n = (yyvsp[-1].no)                     ;
 			n = (noh*) realloc(n,
@@ -1442,65 +1443,65 @@ yyreduce:
 			n->childcount++                 ;
 			(yyval.no) = n                          ;
 		}
-#line 1446 "calc.tab.c"
+#line 1447 "calc.tab.c"
     break;
 
   case 4: /* stmts: stmt  */
-#line 54 "calc.y"
+#line 55 "calc.y"
        {
-	 		(yyval.no) = create_noh(STMT, 1, yylineno)       ;
+	 		(yyval.no) = create_noh(STMT, 1)       ;
 			(yyval.no)->children[0] = (yyvsp[0].no)           ;
 		}
-#line 1455 "calc.tab.c"
+#line 1456 "calc.tab.c"
     break;
 
   case 5: /* stmt: atribuicao  */
-#line 60 "calc.y"
+#line 61 "calc.y"
                   {
 	 		(yyval.no) = (yyvsp[0].no)                        ;
 	 }
-#line 1463 "calc.tab.c"
+#line 1464 "calc.tab.c"
     break;
 
   case 6: /* stmt: TOK_AFFICHAGE aritmetica  */
-#line 63 "calc.y"
+#line 64 "calc.y"
                            {
-	 		(yyval.no) = create_noh(AFFICHAGE, 1, yylineno)  ;
+	 		(yyval.no) = create_noh(AFFICHAGE, 1)  ;
 			(yyval.no)->children[0] = (yyvsp[0].no)           ;
 	 }
-#line 1472 "calc.tab.c"
+#line 1473 "calc.tab.c"
     break;
 
   case 7: /* atribuicao: TOK_IDENT '=' aritmetica  */
-#line 69 "calc.y"
+#line 70 "calc.y"
                                       {
-	 			(yyval.no) = create_noh(ASSIGN, 2, yylineno)          ;
-				noh *aux = create_noh(IDENT, 0, yylineno)     ;
+	 			(yyval.no) = create_noh(ASSIGN, 2)          ;
+				noh *aux = create_noh(IDENT, 0)     ;
 				aux->name = (yyvsp[-2].args).ident                ;
 				(yyval.no)->children[0] = aux               ;
 				(yyval.no)->children[1] = (yyvsp[0].no)                ;
 				if (!simbolo_existe((yyvsp[-2].args).ident))
 					simbolo_novo((yyvsp[-2].args).ident, TOK_IDENT);
 	 	}
-#line 1486 "calc.tab.c"
+#line 1487 "calc.tab.c"
     break;
 
   case 8: /* atribuicao: si  */
-#line 78 "calc.y"
+#line 79 "calc.y"
                                                                 { (yyval.no) = (yyvsp[0].no)                ; }
-#line 1492 "calc.tab.c"
+#line 1493 "calc.tab.c"
     break;
 
   case 9: /* atribuicao: alorsque  */
-#line 79 "calc.y"
+#line 80 "calc.y"
                                                                 { (yyval.no) = (yyvsp[0].no)                ; }
-#line 1498 "calc.tab.c"
+#line 1499 "calc.tab.c"
     break;
 
   case 10: /* si: TOK_SI '(' logical ')' '{' stmts '}'  */
-#line 82 "calc.y"
+#line 83 "calc.y"
                                           {
-				(yyval.no) = create_noh(SI, 2, yylineno)                                     ;
+				(yyval.no) = create_noh(SI, 2)                                     ;
 				(yyval.no)->children[0] = (yyvsp[-4].no)                                       ;
 				noh *aux = (yyvsp[-1].no)						  					   ;	
 				if(aux -> childcount == 1){
@@ -1511,13 +1512,13 @@ yyreduce:
 				  (yyval.no) -> children[1] = aux;
 				}				
 			}
-#line 1515 "calc.tab.c"
+#line 1516 "calc.tab.c"
     break;
 
   case 11: /* si: TOK_SI '(' logical ')' '{' stmts '}' TOK_SINON si  */
-#line 94 "calc.y"
+#line 95 "calc.y"
                                                    {
-				(yyval.no) = create_noh(SI, 3, yylineno)                                     ;
+				(yyval.no) = create_noh(SI, 3)                                     ;
 				(yyval.no)->children[0] = (yyvsp[-6].no)                                       ;
 				(yyval.no)->children[2] = (yyvsp[0].no)                                       ;
 				noh *aux = (yyvsp[-3].no)						   					   ;
@@ -1529,13 +1530,13 @@ yyreduce:
                                   (yyval.no) -> children[1] = aux;
 				}
 				}
-#line 1533 "calc.tab.c"
+#line 1534 "calc.tab.c"
     break;
 
   case 12: /* si: TOK_SI '(' logical ')' '{' stmts '}' TOK_SINON '{' stmts '}'  */
-#line 107 "calc.y"
+#line 108 "calc.y"
                                                               {
-				(yyval.no) = create_noh(SI, 3, yylineno)                                     ;
+				(yyval.no) = create_noh(SI, 3)                                     ;
 				(yyval.no)->children[0] = (yyvsp[-8].no)                                       ;
 				noh *aux = (yyvsp[-5].no)						  				       ;   
 				if(aux -> childcount == 1){
@@ -1555,13 +1556,13 @@ yyreduce:
                                   (yyval.no) -> children[2] = aux;
 				}
 }
-#line 1559 "calc.tab.c"
+#line 1560 "calc.tab.c"
     break;
 
   case 13: /* alorsque: TOK_ALORSQUE '(' logical ')' '{' stmts '}'  */
-#line 129 "calc.y"
+#line 130 "calc.y"
                                                              {
-							(yyval.no) = create_noh(ALORSQUE, 2, yylineno)              ;
+							(yyval.no) = create_noh(ALORSQUE, 2)              ;
 							(yyval.no)->children[0] = (yyvsp[-4].no)                      ;
 							noh *aux = (yyvsp[-1].no)                             ;
 			                if(aux -> childcount == 1){
@@ -1574,226 +1575,226 @@ yyreduce:
 
 						
 	}
-#line 1578 "calc.tab.c"
+#line 1579 "calc.tab.c"
     break;
 
   case 14: /* logical: logical TOK_OU lterm  */
-#line 145 "calc.y"
+#line 146 "calc.y"
                                 {
-							(yyval.no) = create_noh(OU, 2, yylineno)   ;
+							(yyval.no) = create_noh(OU, 2)   ;
 							(yyval.no)->children[0] = (yyvsp[-2].no)     ;
 							(yyval.no)->children[1] = (yyvsp[0].no)     ;
 							}
-#line 1588 "calc.tab.c"
+#line 1589 "calc.tab.c"
     break;
 
   case 15: /* logical: lterm  */
-#line 150 "calc.y"
+#line 151 "calc.y"
                                                 {
 			(yyval.no) = (yyvsp[0].no)                    			     ;
 		}
-#line 1596 "calc.tab.c"
+#line 1597 "calc.tab.c"
     break;
 
   case 16: /* lterm: lterm TOK_ET lfactor  */
-#line 155 "calc.y"
+#line 156 "calc.y"
                                 {
-								(yyval.no) = create_noh(ET, 2, yylineno) ;
+								(yyval.no) = create_noh(ET, 2) ;
 							 (yyval.no)->children[0] = (yyvsp[-2].no)      ;
 							 (yyval.no)->children[1] = (yyvsp[0].no)      ;
 							}
-#line 1606 "calc.tab.c"
+#line 1607 "calc.tab.c"
     break;
 
   case 17: /* lterm: lfactor  */
-#line 160 "calc.y"
+#line 161 "calc.y"
                                 {
 			(yyval.no) = (yyvsp[0].no)                     			   ;
 		}
-#line 1614 "calc.tab.c"
+#line 1615 "calc.tab.c"
     break;
 
   case 18: /* lfactor: '(' logical ')'  */
-#line 165 "calc.y"
+#line 166 "calc.y"
                                 {
 								(yyval.no) = (yyvsp[-1].no)                    ;
 		}
-#line 1622 "calc.tab.c"
+#line 1623 "calc.tab.c"
     break;
 
   case 19: /* lfactor: aritmetica '>' aritmetica  */
-#line 168 "calc.y"
+#line 169 "calc.y"
                                                         {
-								(yyval.no) = create_noh(GT, 2, yylineno)     ;
+								(yyval.no) = create_noh(GT, 2)     ;
 							 (yyval.no)->children[0] = (yyvsp[-2].no)          ;
 							 (yyval.no)->children[1] = (yyvsp[0].no)          ;
 							}
-#line 1632 "calc.tab.c"
+#line 1633 "calc.tab.c"
     break;
 
   case 20: /* lfactor: aritmetica '<' aritmetica  */
-#line 173 "calc.y"
+#line 174 "calc.y"
                                                         {
-								(yyval.no) = create_noh(LT, 2, yylineno)     ;
+								(yyval.no) = create_noh(LT, 2)     ;
 							 (yyval.no)->children[0]= (yyvsp[-2].no)           ;
 							 (yyval.no)->children[1] = (yyvsp[0].no)          ;
 							}
-#line 1642 "calc.tab.c"
+#line 1643 "calc.tab.c"
     break;
 
   case 21: /* lfactor: aritmetica '=' '=' aritmetica  */
-#line 178 "calc.y"
+#line 179 "calc.y"
                                                 {
-								(yyval.no) = create_noh(EQ, 2, yylineno)     ;
+								(yyval.no) = create_noh(EQ, 2)     ;
 							 (yyval.no)->children[0] = (yyvsp[-3].no)          ;
 							 (yyval.no)->children[1] = (yyvsp[0].no)          ;
 							}
-#line 1652 "calc.tab.c"
+#line 1653 "calc.tab.c"
     break;
 
   case 22: /* lfactor: aritmetica '>' '=' aritmetica  */
-#line 183 "calc.y"
+#line 184 "calc.y"
                                                 {
-								(yyval.no) = create_noh(GE, 2, yylineno)     ;
+								(yyval.no) = create_noh(GE, 2)     ;
 							 (yyval.no)->children[0] = (yyvsp[-3].no)          ;
 							 (yyval.no)->children[1] = (yyvsp[0].no)          ;
 							}
-#line 1662 "calc.tab.c"
+#line 1663 "calc.tab.c"
     break;
 
   case 23: /* lfactor: aritmetica '<' '=' aritmetica  */
-#line 188 "calc.y"
+#line 189 "calc.y"
                                                 {
-								(yyval.no) = create_noh(LE, 2, yylineno)     ;
+								(yyval.no) = create_noh(LE, 2)     ;
 							 (yyval.no)->children[0] = (yyvsp[-3].no)          ;
 							 (yyval.no)->children[1] = (yyvsp[0].no)          ;
 							}
-#line 1672 "calc.tab.c"
+#line 1673 "calc.tab.c"
     break;
 
   case 24: /* lfactor: aritmetica '!' '=' aritmetica  */
-#line 193 "calc.y"
+#line 194 "calc.y"
                                                 {
-								(yyval.no) = create_noh(NE, 2, yylineno)     ;
+								(yyval.no) = create_noh(NE, 2)     ;
 							 (yyval.no)->children[0] = (yyvsp[-3].no)          ;
 							 (yyval.no)->children[1] = (yyvsp[0].no)          ;
 							}
-#line 1682 "calc.tab.c"
+#line 1683 "calc.tab.c"
     break;
 
   case 25: /* aritmetica: aritmetica '+' term  */
-#line 200 "calc.y"
+#line 201 "calc.y"
                                  {
-	 			(yyval.no) = create_noh(SUM, 2, yylineno)        ;
+	 			(yyval.no) = create_noh(SUM, 2)        ;
 				(yyval.no)->children[0] = (yyvsp[-2].no)           ;
 				(yyval.no)->children[1] = (yyvsp[0].no)           ;
 	 		}
-#line 1692 "calc.tab.c"
+#line 1693 "calc.tab.c"
     break;
 
   case 26: /* aritmetica: aritmetica '-' term  */
-#line 205 "calc.y"
+#line 206 "calc.y"
                                        {
-	 			(yyval.no) = create_noh(MINUS, 2, yylineno)      ;
+	 			(yyval.no) = create_noh(MINUS, 2)      ;
 				(yyval.no)->children[0] = (yyvsp[-2].no)           ;
 				(yyval.no)->children[1] = (yyvsp[0].no)           ;
 	 		}
-#line 1702 "calc.tab.c"
+#line 1703 "calc.tab.c"
     break;
 
   case 27: /* aritmetica: term  */
-#line 210 "calc.y"
+#line 211 "calc.y"
        {
 		 		(yyval.no) = (yyvsp[0].no)                        ;
 	 		}
-#line 1710 "calc.tab.c"
+#line 1711 "calc.tab.c"
     break;
 
   case 28: /* term: term '*' term2  */
-#line 215 "calc.y"
+#line 216 "calc.y"
                       {
-	 		(yyval.no) = create_noh(MULTI, 2, yylineno)   ;
+	 		(yyval.no) = create_noh(MULTI, 2)   ;
 			(yyval.no)->children[0] = (yyvsp[-2].no)        ;
 			(yyval.no)->children[1] = (yyvsp[0].no)        ;	
 	 }
-#line 1720 "calc.tab.c"
+#line 1721 "calc.tab.c"
     break;
 
   case 29: /* term: term '/' term2  */
-#line 220 "calc.y"
+#line 221 "calc.y"
                  {
-	 		(yyval.no) = create_noh(DIVIDE, 2, yylineno)  ;
+	 		(yyval.no) = create_noh(DIVIDE, 2)  ;
 			(yyval.no)->children[0] = (yyvsp[-2].no)        ;
 			(yyval.no)->children[1] = (yyvsp[0].no)        ;	
 	 }
-#line 1730 "calc.tab.c"
+#line 1731 "calc.tab.c"
     break;
 
   case 30: /* term: term2  */
-#line 225 "calc.y"
+#line 226 "calc.y"
         {
 	 		(yyval.no) = (yyvsp[0].no)                    ;
 	 }
-#line 1738 "calc.tab.c"
+#line 1739 "calc.tab.c"
     break;
 
   case 31: /* term2: term2 '^' factor  */
-#line 230 "calc.y"
+#line 231 "calc.y"
                          {
-	 		(yyval.no) = create_noh(POW, 2, yylineno)  ;
+	 		(yyval.no) = create_noh(POW, 2)  ;
 			(yyval.no)->children[0] = (yyvsp[-2].no)     ;
 			(yyval.no)->children[1] = (yyvsp[0].no)     ;
 		}
-#line 1748 "calc.tab.c"
+#line 1749 "calc.tab.c"
     break;
 
   case 32: /* term2: factor  */
-#line 235 "calc.y"
+#line 236 "calc.y"
          {
 	 		(yyval.no) = (yyvsp[0].no)                 ;
 	 	}
-#line 1756 "calc.tab.c"
+#line 1757 "calc.tab.c"
     break;
 
   case 33: /* factor: '(' aritmetica ')'  */
-#line 240 "calc.y"
+#line 241 "calc.y"
                             {
 			(yyval.no) = (yyvsp[-1].no)                      ;
 		 }
-#line 1764 "calc.tab.c"
+#line 1765 "calc.tab.c"
     break;
 
   case 34: /* factor: TOK_IDENT  */
-#line 243 "calc.y"
+#line 244 "calc.y"
             {
-	 		(yyval.no) = create_noh(IDENT, 0, yylineno)    ;
+	 		(yyval.no) = create_noh(IDENT, 0)    ;
 			(yyval.no)->name = (yyvsp[0].args).ident          ;
 			if (!simbolo_existe((yyvsp[0].args).ident))
 				simbolo_novo((yyvsp[0].args).ident, TOK_IDENT);
 	 }
-#line 1775 "calc.tab.c"
+#line 1776 "calc.tab.c"
     break;
 
   case 35: /* factor: TOK_INTEGER  */
-#line 249 "calc.y"
+#line 250 "calc.y"
                        {
-	 		(yyval.no) = create_noh(INTEGER, 0, yylineno)  ;
+	 		(yyval.no) = create_noh(INTEGER, 0)  ;
 			(yyval.no)->intv = (yyvsp[0].args).intv           ;
 	 	 }
-#line 1784 "calc.tab.c"
+#line 1785 "calc.tab.c"
     break;
 
   case 36: /* factor: TOK_FLOAT  */
-#line 253 "calc.y"
+#line 254 "calc.y"
                      {
-	 		(yyval.no) = create_noh(FLOAT, 0, yylineno)    ;
+	 		(yyval.no) = create_noh(FLOAT, 0)    ;
 			(yyval.no)->dblv = (yyvsp[0].args).dblv           ;
 	 	 }
-#line 1793 "calc.tab.c"
+#line 1794 "calc.tab.c"
     break;
 
 
-#line 1797 "calc.tab.c"
+#line 1798 "calc.tab.c"
 
       default: break;
     }
@@ -2017,10 +2018,11 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 259 "calc.y"
+#line 260 "calc.y"
 
 
 int yyerror(const char *s) {
-printf("Erreur de ligne %d: %s\n", yylineno, s)    ;
+error_count++;
+printf("Erreur: %d. Ligne: %d. %s\n" ,error_count, yylineno, s)    ;
 	return 1                                     ;
 }

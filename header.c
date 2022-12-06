@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "header.h"
 
-noh *create_noh(enum noh_type nt, int children, int line) {
+noh *create_noh(enum noh_type nt, int children) {
 	static int IDCOUNT = 0;
 	noh *newn = (noh*)calloc(1,
 		sizeof(noh)+
@@ -9,7 +9,7 @@ noh *create_noh(enum noh_type nt, int children, int line) {
 	newn->type = nt;
 	newn->childcount = children;
 	newn->id = IDCOUNT++;
-	newn->line = line;
+	newn->line = yylineno;
 	return newn;
 }
 
@@ -70,13 +70,15 @@ void check_declared_vars(noh **root, noh *no)
 		if(s != -1)
 			tsimbolos[s].exists = true;
 	}
-	else if (no->type == IDENT && nr->type != ASSIGN)
-	{
+	else if (no->type == IDENT) {
+		if (nr->type == ASSIGN && no == nr->children[0])
+			return;
+	
 		int s = search_symbol(no->name);
 		if (s == -1 || !tsimbolos[s].exists)
 		{
-			printf("%d: erreur : symbole %s non déclaré.\n", no->children[1]->line, no->name);
 			error_count++;
+			printf("Erreur: %d. Ligne: %d. Symbole %s non déclaré.\n", error_count, no->line, no->name);			
 		}
 	}
 }
@@ -121,11 +123,9 @@ void check_division_zero(noh **root, noh *no)
 {
 	if(no->type == DIVIDE){
 		noh *aux = no->children[1];
-		if(aux->type == INTEGER || aux->type == FLOAT){
-			if(aux->intv == 0 || aux->dblv == 0){
-				printf("%d: erreur : ne peut pas diviser par zéro.\n", no->children[1]->line);
-				error_count++;
-			}
+		if((aux->type == INTEGER && aux->intv == 0) || (aux->type == FLOAT && aux->dblv == 0)){		
+				error_count++;	
+				printf("Erreur: %d. Ligne: %d. La division par zéro n'est pas autorisée.\n", error_count, aux->line);							
 		}
 	}
 }
@@ -137,8 +137,8 @@ void check_receive_itself(noh **root, noh *no)
 		noh *aux2 = no->children[1];
 		if(aux->type == IDENT){
 			if(aux2->type == IDENT && ((aux->intv == aux2->intv) ||(aux->dblv == aux2->dblv))){
-				printf("%d: attention : variable '%s' recevant un contenu égal à lui-même.\n", no->children[1]->line, aux->name);
 				error_count++;
+				printf("Attention: %d. Ligne: %d. Variable '%s' recevant un contenu égal à lui-même.\n", error_count, aux->line, aux2->name);				
 			}
 		}
 	}

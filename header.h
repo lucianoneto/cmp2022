@@ -37,7 +37,7 @@ static simbolo tsimbolos[100];
 simbolo *simbolo_novo(char *nome, int token);
 bool simbolo_existe(char *nome);
 void debug();
-
+extern int yylineno;
 
 struct noh {
 	int id;
@@ -62,7 +62,7 @@ void check_receive_itself(noh **root, noh *no);
 
 void visitor_leaf_first(noh **root, visitor_action act);
 
-noh *create_noh(enum noh_type, int children, int line);
+noh *create_noh(enum noh_type nt, int children);
 
 void print(noh *root);
 void print_rec(FILE *f, noh *root);

@@ -12,5 +12,4 @@ si (n >= 1){
 auxiliar = a + b
 affichage(auxiliar)
 i = i + 1
-
 a = b
